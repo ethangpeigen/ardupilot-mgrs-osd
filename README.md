@@ -19,9 +19,16 @@ It does **not** replace the normal OSD, and it does not touch the flight control
 | Parameter | Default | Meaning |
 |---|---|---|
 | `MGRS_ENABLE` | 1 | 1 sends the position, 0 stays quiet |
-| `MGRS_PERIOD` | 5 | seconds between messages (2..60); the OSD keeps a message for about 10 s |
+| `MGRS_PERIOD` | 5 | seconds between messages (0.5..60, decimals allowed). **Lower = a more up-to-date position.** The OSD keeps a message for `OSD_MSG_TIME` seconds |
 | `MGRS_DIGITS` | 4 | 5 = 1 m, 4 = 10 m, 3 = 100 m, 2 = 1 km, 1 = 10 km |
 
+### Making it update faster
+
+The text only changes when the script sends a new message, so the lag you see is `MGRS_PERIOD`. Set it to **1** for a
+once-a-second update, or **0.5** at the fastest. Each update is a normal text message, so very short periods add load:
+it goes to your ground station and the log too, and on a slow telemetry link (57600 baud or less) it can crowd out
+other messages. If that happens, go back to 1 or 2 seconds. `MGRS_DIGITS` = 3 (100 m) or 4 (10 m) also changes less
+often than 5 (1 m), so the number flickers less.
 ## Replacing the latitude / longitude on the OSD
 
 The script's text appears in the OSD **message panel**, so you can put that panel where the latitude and longitude are

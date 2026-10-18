@@ -103,13 +103,15 @@ def main():
     st["sent"] = lua.table(); update()
     assert len(st["sent"]) == 0, "must stay quiet with no location"
     st["lat"], st["lng"] = 38.8895, -77.0353
-    st["p_PERIOD"] = 1
-    _, iv = update(); assert iv == 2000, iv
+    st["p_PERIOD"] = 0.1
+    _, iv = update(); assert iv == 500, iv
     st["p_PERIOD"] = 500
     _, iv = update(); assert iv == 60000, iv
     st["p_PERIOD"] = 8
     _, iv = update(); assert iv == 8000, iv
-    print("behaviour checks: ok (silent without 3D fix / disabled / above 84N / no location; period clamped 2..60 s)")
+    st["p_PERIOD"] = 1.5
+    _, iv = update(); assert iv == 1500, iv
+    print("behaviour checks: ok (silent without 3D fix / disabled / above 84N / no location; period clamped 0.5..60 s, decimals allowed)")
     sys.exit(1 if bad else 0)
 
 

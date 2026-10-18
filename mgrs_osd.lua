@@ -8,7 +8,7 @@
 -- Install: copy this file to APM/scripts/ on the autopilot's SD card, set SCR_ENABLE = 1, reboot, then refresh the
 -- parameter list. Parameters (prefix MGRS_):
 --   MGRS_ENABLE   1 = send the position, 0 = stay quiet
---   MGRS_PERIOD   seconds between messages (2..60). The OSD shows a message for about 10 seconds
+--   MGRS_PERIOD   seconds between messages (0.5..60, decimals allowed). The OSD keeps a message for OSD_MSG_TIME seconds
 --   MGRS_DIGITS   digits per axis: 5 = 1 m, 4 = 10 m, 3 = 100 m, 2 = 1 km, 1 = 10 km
 --
 -- Needs a 3D GPS fix. Outside 80 S..84 N MGRS uses a different grid (UPS) and this script stays silent there.
@@ -69,8 +69,8 @@ local function to_mgrs(lat, lon, digits)
 end
 
 local function update()
-  local period = floor(P_PERIOD:get() or 5)
-  if period < 2 then period = 2 elseif period > 60 then period = 60 end
+  local period = P_PERIOD:get() or 5
+  if period < 0.5 then period = 0.5 elseif period > 60 then period = 60 end
   if (P_ENABLE:get() or 0) >= 1 and gps:status(0) >= GPS_FIX_3D then
     local loc = ahrs:get_location()
     if loc then
@@ -78,7 +78,7 @@ local function update()
       if text then gcs:send_text(MAV_SEVERITY_INFO, "MGRS " .. text) end
     end
   end
-  return update, period * 1000
+  return update, floor(period * 1000)
 end
 
 gcs:send_text(MAV_SEVERITY_INFO, "mgrs_osd: loaded")
