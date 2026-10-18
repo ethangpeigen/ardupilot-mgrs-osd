@@ -22,6 +22,33 @@ It does **not** replace the normal OSD, and it does not touch the flight control
 | `MGRS_PERIOD` | 5 | seconds between messages (2..60); the OSD keeps a message for about 10 s |
 | `MGRS_DIGITS` | 4 | 5 = 1 m, 4 = 10 m, 3 = 100 m, 2 = 1 km, 1 = 10 km |
 
+## Replacing the latitude / longitude on the OSD
+
+The script's text appears in the OSD **message panel**, so you can put that panel where the latitude and longitude are
+now and switch those two items off. The OSD then shows the MGRS grid reference in their place.
+
+1. Look up where your OSD draws the coordinates: `OSDn_GPSLAT_X` / `OSDn_GPSLAT_Y` and `OSDn_GPSLONG_X` /
+   `OSDn_GPSLONG_Y` (n is the screen you use, usually 1; X is the column, Y is the row).
+2. Move the message panel onto the latitude: set `OSDn_MESSAGE_X` and `OSDn_MESSAGE_Y` to the **latitude's X and Y**.
+3. Turn the coordinates off: `OSDn_GPSLAT_EN = 0` and `OSDn_GPSLONG_EN = 0`.
+4. Keep `MGRS_PERIOD` at 5 seconds or less. A message stays on screen for `OSD_MSG_TIME` seconds (10 by default), so the
+   position is then nearly always visible.
+
+Example (a DisplayPort/HD OSD, `OSD_TYPE = 5`) where the coordinates were drawn at column 9, rows 13 and 14:
+
+| Parameter | Before | After |
+|---|---|---|
+| `OSD1_MESSAGE_X` | 2 | 9 |
+| `OSD1_MESSAGE_Y` | 6 | 13 |
+| `OSD1_GPSLAT_EN` | 1 | 0 |
+| `OSD1_GPSLONG_EN` | 1 | 0 |
+
+The MGRS line takes one row, so the second row (14 in the example) is left empty. Use `OSD1_MESSAGE_Y = 14` if you prefer the
+text one row lower. Your own X/Y values will differ; copy the latitude's. If the text looks off by a column or two,
+nudge `OSD1_MESSAGE_X`. This worked on a Walksnail-style DisplayPort OSD on ArduCopter 4.7; other OSD types are untested.
+
+Other messages (a mode change, a pre-arm or battery warning) replace the MGRS text until the next update, because the
+message panel shows only the most recent message.
 ## Limits
 
 * The message line is shared with other alerts (flight mode changes, pre-arm warnings, battery warnings). Another message
